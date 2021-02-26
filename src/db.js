@@ -92,3 +92,20 @@ export async function list() {
 export async function end() {
   await pool.end();
 }
+
+export async function select(offset = 0, limit = 50) {
+  const client = await pool.connect();
+
+  try {
+    const q = 'SELECT * FROM signatures ORDER BY id OFFSET $1 LIMIT $2';
+    const res = await client.query(q, [offset, limit]);
+
+    return res.rows;
+  } catch (e) {
+    console.error('Error selecting', e);
+  } finally {
+    client.release();
+  }
+
+  return [];
+}

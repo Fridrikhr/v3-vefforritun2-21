@@ -1,8 +1,9 @@
 import express from 'express';
 import { body, validationResult } from 'express-validator';
 import xss from 'xss';
+import { router as loginRouter } from './login.js'
 
-import { list, insert } from './db.js';
+import { insert, select } from './db.js';
 
 export const router = express.Router();
 
@@ -25,7 +26,7 @@ async function index(req, res) {
     comment: '',
   };
 
-  const registrations = await list();
+  const registrations = await select();
 
   res.render('index', {
     errors, formData, registrations,
@@ -73,7 +74,7 @@ async function validationCheck(req, res, next) {
   const formData = {
     name, nationalId, comment, anonymous,
   };
-  const registrations = await list();
+  const registrations = await select();
 
   const validation = validationResult(req);
 
@@ -116,3 +117,5 @@ router.post(
   sanitizationMiddleware,
   catchErrors(register),
 );
+
+router.use('/', loginRouter);

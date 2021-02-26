@@ -1,18 +1,68 @@
+import { promises } from 'fs';
 import { readFile } from 'fs/promises';
-import { query, end } from './db.js';
+import faker from 'faker';
+import dotenv from 'dotenv';
+import pg from 'pg';
+import { query, insert } from './db.js';
 
-const schemaFile = './sql/schema.sql';
+dotenv.config();
 
-async function create() {
-  const data = await readFile(schemaFile);
+const {
+  DATABASE_URL: connectionString,
+} = process.env;
 
-  await query(data.toString('utf-8'));
+const pool = new pg.Pool({ connectionString})
 
-  await end();
-
-  console.info('Schema created');
+if (!connectionString) {
+  console.error('Vantar DATABASE_URL');
+  process.exit(1);
 }
 
-create().catch((err) => {
-  console.error('Error creating schema', err);
+
+async function initialize() {
+  try {
+    const createTable = await readFile('./sql/schema.sql');
+    await query(createTable.toString('utf8'));
+    console.info('Table made');
+  } catch (e) {
+    console.error(e.message);
+  }
+
+  for(let i=0;i<510;i++){
+    let data = await {
+      name: faker.name.findName(),
+      nationalId: faker.random.number(),
+      comment: faker.lorem.sentence(),
+      anonymous: false,
+    };
+
+    try {
+      await insert(data);
+    } catch (e) {
+      console.error(e.message);
+    }
+  }
+      console.log('faker added');
+}
+
+initialize().catch((err) => {
+  console.error(err);
 });
+
+/*Fall til að athuga hvort faker virki
+async function select() {
+  const client = await pool.connect();
+
+  try {
+    const res = await client.query('SELECT * FROM signatures;');
+    console.log(res.rows);
+  } catch (e) {
+    console.error('Error selecting', e);
+  } finally {
+    client.release();
+  }
+  return [];
+}
+
+await select();
+*/
