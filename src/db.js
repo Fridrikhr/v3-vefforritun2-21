@@ -93,7 +93,7 @@ export async function end() {
   await pool.end();
 }
 
-export async function select(offset = 0, limit = 50) {
+export async function select(offset, limit) {
   const client = await pool.connect();
 
   try {

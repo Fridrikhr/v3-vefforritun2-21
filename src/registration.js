@@ -26,10 +26,35 @@ async function index(req, res) {
     comment: '',
   };
 
-  const registrations = await select();
+  let { offset = 0, limit = 50 } = req.query;
+  offset = Number(offset);
+  limit = Number(limit);
+
+  const registrations = await select(offset, limit);
+
+  const result = await {
+    _links: {
+      self: {
+        href: `http://localhost:3000/?offset=${offset}&limit=${limit}`,
+      },
+    },
+    items: registrations,
+  };
+
+  if (offset > 0) {
+    result._links.prev = await {
+      href: `http://localhost:3000/?offset=${offset - limit}&limit=${limit}`,
+    };
+  }
+
+  if (registrations.length <= limit) {
+    result._links.next = await {
+      href: `http://localhost:3000/?offset=${Number(offset) + limit}&limit=${limit}`,
+    }
+  }
 
   res.render('index', {
-    errors, formData, registrations,
+    errors, formData, registrations, result,
   });
 }
 

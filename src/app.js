@@ -140,9 +140,35 @@ function ensureLoggedIn(req, res, next) {
 
 async function admin(req, res) {
   const name = req.user.username;
-  const registrations = await select();
 
-  return res.render('admin', { name, registrations });
+  let { offset = 0, limit = 50 } = req.query;
+  offset = Number(offset);
+  limit = Number(limit);
+
+  const registrations = await select(offset, limit);
+
+  const result = await {
+    _links: {
+      self: {
+        href: `http://localhost:3000/admin/?offset=${offset}&limit=${limit}`,
+      },
+    },
+    items: registrations,
+  };
+
+  if (offset > 0) {
+    result._links.prev = await {
+      href: `http://localhost:3000/admin/?offset=${offset - limit}&limit=${limit}`,
+    };
+  }
+
+  if (registrations.length <= limit) {
+    result._links.next = await {
+      href: `http://localhost:3000/admin/?offset=${Number(offset) + limit}&limit=${limit}`,
+    }
+  }
+
+  return res.render('admin', { name, registrations, result });
 }
 
 app.get('/admin', (req, res) => {

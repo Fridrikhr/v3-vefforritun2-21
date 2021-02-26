@@ -36,6 +36,7 @@ async function initialize() {
     };
 
     try {
+      console.log(data);
       await insert(data);
     } catch (e) {
       console.error(e.message);
