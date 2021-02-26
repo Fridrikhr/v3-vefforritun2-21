@@ -1,7 +1,7 @@
 import express from 'express';
 import { body, validationResult } from 'express-validator';
 import xss from 'xss';
-import { router as loginRouter } from './login.js'
+import { router as loginRouter } from './login.js';
 
 import { insert, select } from './db.js';
 

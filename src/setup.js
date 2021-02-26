@@ -11,13 +11,12 @@ const {
   DATABASE_URL: connectionString,
 } = process.env;
 
-const pool = new pg.Pool({ connectionString})
+const pool = new pg.Pool({ connectionString });
 
 if (!connectionString) {
   console.error('Vantar DATABASE_URL');
   process.exit(1);
 }
-
 
 async function initialize() {
   try {
@@ -28,8 +27,8 @@ async function initialize() {
     console.error(e.message);
   }
 
-  for(let i=0;i<510;i++){
-    let data = await {
+  for (let i = 0; i < 510; i++) {
+    const data = await {
       name: faker.name.findName(),
       nationalId: faker.random.number(),
       comment: faker.lorem.sentence(),
@@ -42,14 +41,14 @@ async function initialize() {
       console.error(e.message);
     }
   }
-      console.log('faker added');
+  console.log('faker added');
 }
 
 initialize().catch((err) => {
   console.error(err);
 });
 
-/*Fall til að athuga hvort faker virki
+/* Fall til að athuga hvort faker virki
 async function select() {
   const client = await pool.connect();
 

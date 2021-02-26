@@ -9,12 +9,10 @@ import session from 'express-session';
 import { format } from 'date-fns';
 import { Strategy } from 'passport-local';
 
-
 import { router as registrationRouter } from './registration.js';
 import { router as loginRouter } from './login.js';
 import { comparePasswords, findByUsername, findById } from './users.js';
-import { select } from './db.js'
-
+import { select } from './db.js';
 
 dotenv.config();
 
@@ -35,7 +33,7 @@ app.use(session({
   secret: sessionSecret,
   resave: false,
   saveUninitialized: false,
-  maxAge: 20*1000,
+  maxAge: 20 * 1000,
 }));
 
 // Sér um að req.body innihaldi gögn úr formi
@@ -120,7 +118,7 @@ passport.deserializeUser(async (id, done) => {
 app.use(passport.initialize());
 app.use(passport.session());
 
-//Til að geta notað user í viewum
+// Til að geta notað user í viewum
 /*
 app.use((req, res, next) => {
   if (req, isAuthenticated()) {
@@ -131,21 +129,21 @@ app.use((req, res, next) => {
 });
 */
 
-//isAuthendicaded() er undefined af einhverjum dularfullum ástæðum
+// isAuthendicaded() er undefined af einhverjum dularfullum ástæðum
 function ensureLoggedIn(req, res, next) {
-  /*if (req.isAuthenticated()) {
+  /* if (req.isAuthenticated()) {
     return next();
-  }*/
+  } */
 
   return res.redirect('/login');
 }
 
 async function admin(req, res) {
-    const name = req.user.username;
-    const registrations = await select();
+  const name = req.user.username;
+  const registrations = await select();
 
-    return res.render('admin', { name, registrations });
-  }
+  return res.render('admin', { name, registrations });
+}
 
 app.get('/admin', (req, res) => {
   if (req.isAuthenticated()) {
@@ -162,8 +160,7 @@ app.get('/admin', (req, res) => {
   }
 
   return res.render('login', { message });
-})
-
+});
 
 app.post(
   '/login',

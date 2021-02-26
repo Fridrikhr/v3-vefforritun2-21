@@ -10,13 +10,13 @@ export const router = express.Router();
 
 const sessionSecret = 'leyndarmál';
 
-router.use(express.urlencoded({extended: true}));
+router.use(express.urlencoded({ extended: true }));
 
 router.use(session({
   secret: sessionSecret,
   resave: false,
   saveUninitialized: false,
-  maxAge: 20*1000,
+  maxAge: 20 * 1000,
 }));
 
 /**
@@ -64,7 +64,7 @@ passport.deserializeUser(async (id, done) => {
 router.use(passport.initialize());
 router.use(passport.session());
 
-//Til að geta notað user í viewum
+// Til að geta notað user í viewum
 /*
 router.use((req, res, next) => {
   if (req, isAuthenticated()) {
@@ -75,11 +75,11 @@ router.use((req, res, next) => {
 });
 */
 
-//isAuthendicaded() er undefined af einhverjum dularfullum ástæðum
+// isAuthendicaded() er undefined af einhverjum dularfullum ástæðum
 function ensureLoggedIn(req, res, next) {
-  /*if (req.isAuthenticated()) {
+  /* if (req.isAuthenticated()) {
     return next();
-  }*/
+  } */
 
   return res.redirect('/login');
 }
@@ -126,7 +126,6 @@ router.get('/login', (req, res) => {
 
 router.post(
   '/login',
-
 
   passport.authenticate('local', {
     failureMessage: 'Notandanafn eða lykilorð vitlaust.',
