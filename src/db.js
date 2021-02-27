@@ -66,23 +66,18 @@ export async function insert({
   return success;
 }
 
-/**
- * List all registrations from the registration table.
- *
- * @returns {Promise<Array<list>>} Promise, resolved to array of all registrations.
- */
-export async function list() {
+export async function count() {
   let result = [];
   try {
     const queryResult = await query(
-      'SELECT name, nationalId, comment, anonymous, signed FROM signatures ORDER BY signed DESC',
+      'SELECT COUNT(*) AS count FROM signatures',
     );
 
-    if (queryResult && queryResult.rows) {
+    if (queryResult) {
       result = queryResult.rows;
     }
   } catch (e) {
-    console.error('Error selecting signatures', e);
+    console.error('Error counting signatures', e);
   }
 
   return result;
@@ -108,4 +103,11 @@ export async function select(offset, limit) {
   }
 
   return [];
+}
+
+export async function deleteRow(id) {
+  const client = await pool.connect();
+
+  const q = 'DELETE FROM signatures WHERE id = $1';
+  return query(q, id)
 }

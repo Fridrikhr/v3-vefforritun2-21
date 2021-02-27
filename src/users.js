@@ -1,5 +1,4 @@
 import bcrypt from 'bcrypt';
-import { query } from './db.js';
 
 const records = [
   {
@@ -9,14 +8,6 @@ const records = [
     // 123
     password: '$2a$11$pgj3.zySyFOvIQEpD7W6Aund1Tw.BFarXxgLJxLbrzIv/4Nteisii',
     admin: true,
-  },
-  {
-    id: 2,
-    username: 'Fridrik',
-
-    // 123
-    password: '$2a$11$pgj3.zySyFOvIQEpD7W6Aund1Tw.BFarXxgLJxLbrzIv/4Nteisii',
-    admin: false,
   },
 ];
 

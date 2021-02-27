@@ -12,7 +12,7 @@ import { Strategy } from 'passport-local';
 import { router as registrationRouter } from './registration.js';
 import { router as loginRouter } from './login.js';
 import { comparePasswords, findByUsername, findById } from './users.js';
-import { select } from './db.js';
+import { count, select, deleteRow } from './db.js';
 
 dotenv.config();
 
@@ -118,24 +118,12 @@ passport.deserializeUser(async (id, done) => {
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Til að geta notað user í viewum
-/*
-app.use((req, res, next) => {
-  if (req, isAuthenticated()) {
-    res.locals.user=req.user;
+export function ensureLoggedIn(req, res, next) {
+   if (req.isAuthenticated()) {
+    return next();
   }
 
-  next();
-});
-*/
-
-// isAuthendicaded() er undefined af einhverjum dularfullum ástæðum
-function ensureLoggedIn(req, res, next) {
-  /* if (req.isAuthenticated()) {
-    return next();
-  } */
-
-  return res.redirect('/login');
+  return res.redirect('/admin');
 }
 
 async function admin(req, res) {
@@ -144,6 +132,8 @@ async function admin(req, res) {
   let { offset = 0, limit = 50 } = req.query;
   offset = Number(offset);
   limit = Number(limit);
+  const total = await count();
+  const counted = total[0].count;
 
   const registrations = await select(offset, limit);
 
@@ -158,17 +148,17 @@ async function admin(req, res) {
 
   if (offset > 0) {
     result._links.prev = await {
-      href: `http://localhost:3000/admin/?offset=${offset - limit}&limit=${limit}`,
+      href: `http://localhost:3000/admin/?offset=${offset - 1}&limit=${limit}`,
     };
   }
 
   if (registrations.length <= limit) {
     result._links.next = await {
-      href: `http://localhost:3000/admin/?offset=${Number(offset) + limit}&limit=${limit}`,
+      href: `http://localhost:3000/admin/?offset=${Number(offset) + 1}&limit=${limit}`,
     }
   }
 
-  return res.render('admin', { name, registrations, result });
+  return res.render('admin', { name, registrations, result, offset, limit, counted, });
 }
 
 app.get('/admin', (req, res) => {
@@ -203,16 +193,16 @@ app.get('/logout', (req, res) => {
   res.redirect('/');
 });
 
-// ensureLoggedIn middleware passar upp á að aðeins innskráðir notendur geti
-// skoðað efnið, aðrir lenda í redirect á /login, stillt í línu 103
-app.get('/admin', ensureLoggedIn, (req, res) => {
-  res.send(`
-    <p>Hér eru leyndarmál</p>
-    <p><a href="/">Forsíða</a></p>
-  `);
-});
-
 app.use('/', registrationRouter);
+
+// ensureLoggedIn middleware passar upp á að aðeins innskráðir notendur geti
+// eytt undirskrift, aðrir lenda í redirect á /admin
+app.get('/:id', ensureLoggedIn, (req, res) => {
+  const { id } = req.params;
+
+  deleteRow(([id]));
+  return res.redirect('/admin')
+});
 
 /**
  * Middleware sem sér um 404 villur.

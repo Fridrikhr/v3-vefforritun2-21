@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import pg from 'pg';
 import { query, insert } from './db.js';
 
+
 dotenv.config();
 
 const {
@@ -19,6 +20,9 @@ if (!connectionString) {
 }
 
 async function initialize() {
+
+  await query('DROP TABLE IF EXISTS signatures');
+
   try {
     const createTable = await readFile('./sql/schema.sql');
     await query(createTable.toString('utf8'));
@@ -30,13 +34,12 @@ async function initialize() {
   for (let i = 0; i < 510; i++) {
     const data = await {
       name: faker.name.findName(),
-      nationalId: faker.random.number(),
-      comment: faker.lorem.sentence(),
-      anonymous: false,
+      nationalId: Math.floor(Math.random() * (9999999999 - 1000000000 + 1) + 1000000000),
+      comment: (Math.random() > 0.4) ? faker.lorem.sentence() :"",
+      anonymous: Math.random() > 0.4 ? true : false,
     };
 
     try {
-      console.log(data);
       await insert(data);
     } catch (e) {
       console.error(e.message);
@@ -48,21 +51,3 @@ async function initialize() {
 initialize().catch((err) => {
   console.error(err);
 });
-
-/* Fall til að athuga hvort faker virki
-async function select() {
-  const client = await pool.connect();
-
-  try {
-    const res = await client.query('SELECT * FROM signatures;');
-    console.log(res.rows);
-  } catch (e) {
-    console.error('Error selecting', e);
-  } finally {
-    client.release();
-  }
-  return [];
-}
-
-await select();
-*/

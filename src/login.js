@@ -77,11 +77,11 @@ router.use((req, res, next) => {
 
 // isAuthendicaded() er undefined af einhverjum dularfullum ástæðum
 function ensureLoggedIn(req, res, next) {
-  /* if (req.isAuthenticated()) {
+   if (req.isAuthenticated()) {
     return next();
-  } */
+  }
 
-  return res.redirect('/login');
+  return res.redirect('/admin');
 }
 
 router.get('/', (req, res) => {
@@ -142,15 +142,6 @@ router.get('/logout', (req, res) => {
   // logout hendir session cookie og session
   req.logout();
   res.redirect('/');
-});
-
-// ensureLoggedIn middleware passar upp á að aðeins innskráðir notendur geti
-// skoðað efnið, aðrir lenda í redirect á /login, stillt í línu 103
-router.get('/admin', ensureLoggedIn, (req, res) => {
-  res.send(`
-    <p>Hér eru leyndarmál</p>
-    <p><a href="/">Forsíða</a></p>
-  `);
 });
 
 export default passport;
