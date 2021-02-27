@@ -14,9 +14,10 @@ if (!connectionString) {
 }
 
 // Notum SSL tengingu við gagnagrunn ef við erum *ekki* í development mode, þ.e.a.s. á local vél
+// eslint-disable-next-line no-unused-vars
 const ssl = nodeEnv !== 'development' ? { rejectUnauthorized: false } : false;
 
-const pool = new pg.Pool({ connectionString, ssl });
+const pool = new pg.Pool({ connectionString, ssl: { rejectUnauthorized: false } });
 
 pool.on('error', (err) => {
   console.error('Villa í tengingu við gagnagrunn, forrit hættir', err);
