@@ -17,7 +17,7 @@ dotenv.config();
 
 const {
   PORT: port = 3000,
-  SESSION_SECRET: sessionSecret,
+  SESSION_SECRET: '$2a$11$pgj3.zySyFOvIQEpD7W6Aund1Tw.BFarXxgLJxLbrzIv/4Nteisii',
   DATABASE_URL: connectionString,
 } = process.env;
 
