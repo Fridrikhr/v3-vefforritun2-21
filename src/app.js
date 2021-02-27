@@ -10,7 +10,6 @@ import { format } from 'date-fns';
 import { Strategy } from 'passport-local';
 
 import { router as registrationRouter } from './registration.js';
-import { router as loginRouter } from './login.js';
 import { comparePasswords, findByUsername, findById } from './users.js';
 import { count, select, deleteRow } from './db.js';
 
@@ -119,7 +118,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 export function ensureLoggedIn(req, res, next) {
-   if (req.isAuthenticated()) {
+  if (req.isAuthenticated()) {
     return next();
   }
 
@@ -138,7 +137,7 @@ async function admin(req, res) {
   const registrations = await select(offset, limit);
 
   const result = await {
-    _links: {
+    links: {
       self: {
         href: `http://localhost:3000/admin/?offset=${offset}&limit=${limit}`,
       },
@@ -147,18 +146,20 @@ async function admin(req, res) {
   };
 
   if (offset > 0) {
-    result._links.prev = await {
+    result.links.prev = await {
       href: `http://localhost:3000/admin/?offset=${offset - 1}&limit=${limit}`,
     };
   }
 
   if (registrations.length <= limit) {
-    result._links.next = await {
+    result.links.next = await {
       href: `http://localhost:3000/admin/?offset=${Number(offset) + 1}&limit=${limit}`,
-    }
+    };
   }
 
-  return res.render('admin', { name, registrations, result, offset, limit, counted, });
+  return res.render('admin', {
+    name, registrations, result, offset, limit, counted,
+  });
 }
 
 app.get('/admin', (req, res) => {
@@ -201,7 +202,7 @@ app.get('/:id', ensureLoggedIn, (req, res) => {
   const { id } = req.params;
 
   deleteRow(([id]));
-  return res.redirect('/admin')
+  return res.redirect('/admin');
 });
 
 /**

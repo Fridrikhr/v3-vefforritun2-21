@@ -187,3 +187,19 @@ button:hover {
   word-break: break-all;
   overflow-wrap: anywhere;
 }
+
+.fjoldi {
+  margin: 0;
+  text-align: center;
+}
+
+.links {
+  width: 80%;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.links__children {
+  display: inline-block;
+  width: 20%;
+}

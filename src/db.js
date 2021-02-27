@@ -106,8 +106,6 @@ export async function select(offset, limit) {
 }
 
 export async function deleteRow(id) {
-  const client = await pool.connect();
-
   const q = 'DELETE FROM signatures WHERE id = $1';
-  return query(q, id)
+  return query(q, id);
 }

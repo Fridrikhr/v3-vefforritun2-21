@@ -1,6 +1,7 @@
 
 <section class="registrations">
   <h2 class="registrations__title">Undirskriftir</h2>
+  <div class="fjoldi">Fjöldi undirskrifta: <%= counted %> </div>
 
   <% if (registrations.length === 0) { %>
     <p class="registrations__empty">Engar undirskriftir.</p>
@@ -23,15 +24,15 @@
   <% } %>
 </section>
 <section class="links">
-  <% if(result._links.prev) { %>
-    <a href=<%= result._links.prev.href %>>Fyrri síða </a>
+  <% if(result.links.prev) { %>
+    <a class="links__children" href=<%= result.links.prev.href %>>Fyrri síða </a>
   <% } else { %>
-    <div>Fyrri síða</div>
+    <div class="links__children">Fyrri síða</div>
   <% } %>
-
-  <% if(result._links.next) { %>
-    <a href=<%= result._links.next.href %>>Næsta síða </a>
+  <div class="links__children">Síða <%= offset+1 %> af <%= limit %></div>
+  <% if(result.links.next) { %>
+    <a class="links__children" href=<%= result.links.next.href %>>Næsta síða </a>
   <% } else {%>
-    <div>Næsta síða</div>
+    <div class="links__children" >Næsta síða</div>
   <% } %>
-</section>
+  </section>

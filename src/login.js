@@ -64,26 +64,6 @@ passport.deserializeUser(async (id, done) => {
 router.use(passport.initialize());
 router.use(passport.session());
 
-// Til að geta notað user í viewum
-/*
-router.use((req, res, next) => {
-  if (req, isAuthenticated()) {
-    res.locals.user=req.user;
-  }
-
-  next();
-});
-*/
-
-// isAuthendicaded() er undefined af einhverjum dularfullum ástæðum
-function ensureLoggedIn(req, res, next) {
-   if (req.isAuthenticated()) {
-    return next();
-  }
-
-  return res.redirect('/admin');
-}
-
 router.get('/', (req, res) => {
   if (req.isAuthenticated()) {
     // req.user kemur beint úr users.js

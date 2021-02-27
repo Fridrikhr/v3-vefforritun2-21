@@ -2,8 +2,7 @@ import express from 'express';
 import { body, validationResult } from 'express-validator';
 import xss from 'xss';
 import { router as loginRouter } from './login.js';
-
-import { insert, select } from './db.js';
+import { insert, select, count } from './db.js';
 
 export const router = express.Router();
 
@@ -29,11 +28,13 @@ async function index(req, res) {
   let { offset = 0, limit = 50 } = req.query;
   offset = Number(offset);
   limit = Number(limit);
+  const total = await count();
+  const counted = total[0].count;
 
   const registrations = await select(offset, limit);
 
   const result = await {
-    _links: {
+    links: {
       self: {
         href: `http://localhost:3000/?offset=${offset}&limit=${limit}`,
       },
@@ -42,19 +43,19 @@ async function index(req, res) {
   };
 
   if (offset > 0) {
-    result._links.prev = await {
-      href: `http://localhost:3000/?offset=${offset - limit}&limit=${limit}`,
+    result.links.prev = await {
+      href: `http://localhost:3000/?offset=${offset - 1}&limit=${limit}`,
     };
   }
 
   if (registrations.length <= limit) {
-    result._links.next = await {
-      href: `http://localhost:3000/?offset=${Number(offset) + limit}&limit=${limit}`,
-    }
+    result.links.next = await {
+      href: `http://localhost:3000/?offset=${Number(offset) + 1}&limit=${limit}`,
+    };
   }
 
   res.render('index', {
-    errors, formData, registrations, result,
+    errors, formData, registrations, result, offset, limit, counted,
   });
 }
 
