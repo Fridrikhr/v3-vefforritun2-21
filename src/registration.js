@@ -16,6 +16,7 @@ function catchErrors(fn) {
   return (req, res, next) => fn(req, res, next).catch(next);
 }
 
+// Heldur utan um paging og að rendera index
 async function index(req, res) {
   const errors = [];
   const formData = {

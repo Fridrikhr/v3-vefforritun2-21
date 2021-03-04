@@ -35,6 +35,10 @@ app.use(session({
   maxAge: 20 * 1000,
 }));
 
+function catchErrors(fn) {
+  return (req, res, next) => fn(req, res, next).catch(next);
+}
+
 // Sér um að req.body innihaldi gögn úr formi
 app.use(express.urlencoded({ extended: true }));
 
@@ -117,6 +121,7 @@ passport.deserializeUser(async (id, done) => {
 app.use(passport.initialize());
 app.use(passport.session());
 
+// Passa að admin sé loggaður inn áður en færslu er eytt
 export function ensureLoggedIn(req, res, next) {
   if (req.isAuthenticated()) {
     return next();
@@ -125,6 +130,7 @@ export function ensureLoggedIn(req, res, next) {
   return res.redirect('/admin');
 }
 
+// Paging kerfi á admin síðu
 async function admin(req, res) {
   const name = req.user.username;
 
@@ -196,14 +202,19 @@ app.get('/logout', (req, res) => {
 
 app.use('/', registrationRouter);
 
-// ensureLoggedIn middleware passar upp á að aðeins innskráðir notendur geti
-// eytt undirskrift, aðrir lenda í redirect á /admin
-app.get('/:id', ensureLoggedIn, (req, res) => {
+async function deleteRoute(req, res) {
   const { id } = req.params;
 
-  deleteRow(([id]));
-  return res.redirect('/admin');
-});
+  const deleted = deleteRow(id);
+
+  if (deleted) { // Tæknilega böggur hér...
+    return res.redirect('/admin');
+  }
+
+  return res.render('error', { title: 'Gat ekki eytt færslu' });
+}
+
+app.post('/delete/:id', ensureLoggedIn, catchErrors(deleteRoute));
 
 /**
  * Middleware sem sér um 404 villur.
@@ -236,7 +247,6 @@ function errorHandler(err, req, res, next) {
 app.use(notFoundHandler);
 app.use(errorHandler);
 
-// Verðum að setja bara *port* svo virki á heroku
 app.listen(port, () => {
   console.info(`Server running at http://localhost:${port}/`);
 });

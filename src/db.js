@@ -66,6 +66,7 @@ export async function insert({
   return success;
 }
 
+// telur fjölda undirskrifta til að reikna blaðsíðufjölda
 export async function count() {
   let result = [];
   try {
@@ -83,7 +84,7 @@ export async function count() {
   return result;
 }
 
-// Helper to remove pg from the event loop
+// Hjálparfall til að fjarlægja pg frá event loop
 export async function end() {
   await pool.end();
 }
@@ -106,6 +107,19 @@ export async function select(offset, limit) {
 }
 
 export async function deleteRow(id) {
-  const q = 'DELETE FROM signatures WHERE id = $1';
-  return query(q, id);
+  let result = [];
+  try {
+    const queryResult = await query(
+      'DELETE FROM signatures WHERE id = $1',
+      [id],
+    );
+
+    if (queryResult && queryResult.rows) {
+      result = queryResult.rows;
+    }
+  } catch (e) {
+    console.error('Error selecting signatures', e);
+  }
+
+  return result;
 }

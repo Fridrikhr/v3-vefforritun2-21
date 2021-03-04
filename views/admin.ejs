@@ -22,8 +22,10 @@
         <td class="date"><%= formatDate(row.signed) %></td>
         <td class="name"><%= row.anonymous ? 'Nafnlaust' : row.name %></td>
         <td class="comment"><%= row.comment %></td>
-        <td class="button">
-          <a href="/<%= row.id %>"><button>Eyða</button></a>
+        <td>
+          <form class="delete-form" method="post" action="/delete/<%= row.id %>">
+            <button class="button">Eyða</button>
+          </form>
         </td>
       </tr>
     <% }) %>
